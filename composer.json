@@ -1,0 +1,27 @@
+{
+    "name": "rbao123/think-tool",
+    "description": "web api tool",
+    "keywords": [
+        "thinkphp"
+    ],
+    "require": {
+        "php" : ">=7.1",
+        "topthink/framework": "^6.0",
+        "ext-openssl": "*",
+        "ext-json": "*",
+        "ext-curl": "*"
+    },
+    "authors": [
+        {
+            "name": "rbao123",
+            "email": "wrbao@foxmail.com"
+        }
+    ],
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "bao\\tool\\": "src"
+        }
+    },
+    "minimum-stability": "dev"
+}
