@@ -3,6 +3,7 @@
 
 namespace bao\tool;
 
+use app\common\tool\CurlTool;
 use think\facade\Cache;
 
 /**
@@ -28,7 +29,7 @@ class ExpressDeliveryTool
             $secretId = '';
             // 云市场分配的密钥Key
             $secretKey = '';
-            $source = 'market-n0ex8e1yy';
+            $source = '';
 
             // 签名
             $datetime = gmdate('D, d M Y H:i:s T');
@@ -52,7 +53,7 @@ class ExpressDeliveryTool
             $res = CurlTool::https_get($url, $data, $header);
             $res = json_decode($res, true);
 
-            if ($res['code'] != 0) {
+            if ($res['code'] != 'OK') {
                 if ($res['code'] == 205) {
                     //快递缓存
                     Cache::tag('ExpressDelivery')->set($num . $com, $res, (5 * 60 * 60));
@@ -73,7 +74,7 @@ class ExpressDeliveryTool
             return $res;
         }
 
-        if ($res['code'] != 0) {
+        if ($res['code'] != 'OK') {
             abort(422, $res['msg']);
         }
 

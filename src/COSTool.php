@@ -3,6 +3,7 @@
 
 namespace bao\tool;
 
+use app\common\tool\TencentCOSSTS\STS;
 use Qcloud\Cos\Client;
 
 
@@ -133,11 +134,15 @@ class COSTool
      */
     public function deleteObject(array $url)
     {
+        return true;
         $Objects = [];
         foreach ($url as $value) {
-//            $key = str_ireplace('http://' . $this->cosurl, '', $value);
-            $key = str_ireplace( $this->cosurl, '', $value);
-            $Objects[] = ['Key' => (string)$key];
+            if (strpos($value, 'defalt') === false) {
+//                $key = str_ireplace('http://' . $this->cosurl, '', $value);
+                $key = str_ireplace($this->cosurl, '', $value);
+                $Objects[] = ['Key' => (string)$key];
+            }
+
         }
 
 //        halt($Objects);
@@ -152,5 +157,49 @@ class COSTool
         } catch (\Exception $e) {
 //            abort(422, '删除文件错误');
         }
+    }
+
+    /**
+     * 生成临时密钥
+     * @return mixed
+     * @throws \Exception
+     */
+    public function getCredential()
+    {
+        $config = array(
+            'url' => 'https://sts.tencentcloudapi.com/',
+            'domain' => 'sts.tencentcloudapi.com',
+            //'proxy' => null,  //设置网络请求代理,若不需要设置，则为null
+            'secretId' => $this->config['secretId'], // 云 API 密钥 secretId
+            'secretKey' => $this->config['secretKey'], // 云 API 密钥 secretKey
+            'bucket' => $this->bucket, // 换成你的 bucket
+            'region' => $this->config['region'], // 换成 bucket 所在地区
+            'durationSeconds' => 600, // 密钥有效期
+            'allowPrefix' => 'admin/video/*', // 这里改成允许的路径前缀，可以根据自己网站的用户登录态判断允许上传的具体路径，例子： a.jpg 或者 a/* 或者 * (使用通配符*存在重大安全风险, 请谨慎评估使用)
+            // 密钥的权限列表。简单上传和分片需要以下的权限，其他权限列表请看 https://cloud.tencent.com/document/product/436/31923
+            'allowActions' => array(
+                // 简单上传
+                'name/cos:PutObject',
+                // 表单上传
+                'name/cos:PostObject',
+                // 分片上传： 初始化分片
+                'name/cos:InitiateMultipartUpload',
+                // 分片上传： 查询 bucket 中未完成分片上传的UploadId
+                "name/cos:ListMultipartUploads",
+                // 分片上传： 查询已上传的分片
+                "name/cos:ListParts",
+                // 分片上传： 上传分片块
+                "name/cos:UploadPart",
+                // 分片上传： 完成分片上传
+                "name/cos:CompleteMultipartUpload"
+            )
+        );
+        //创建 sts
+        $sts = new STS();
+
+        // 获取临时密钥，计算签名
+        $tempKeys = $sts->getTempKeys($config);
+
+        return $tempKeys;
     }
 }

@@ -52,11 +52,12 @@ class IMTool
     public function accountImport($uid, $nickname)
     {
         $data = [
-            'Identifier' => (string)$uid,
+            'Identifier' => (string)env('im.prefix', '') . $uid,
             'Nick' => (string)$nickname,
         ];
         $url = 'https://console.tim.qq.com/v4/im_open_login_svc/account_import';
         $this->publicParams($data, $url);
+        return ['im_identifier' => $data['Identifier']];
     }
 
 
@@ -99,7 +100,6 @@ class IMTool
             'GroupId' => (string)$groupId, // 用户自定义群组 ID（选填）
         ];
         $url = 'https://console.tim.qq.com/v4/group_open_http_svc/create_group';
-
         $this->publicParams($data, $url);
         return $data['GroupId'];
     }
@@ -148,6 +148,40 @@ class IMTool
             "ShutUpTime" => $time // 禁言时间，单位为秒
         ];
         $url = 'https://console.tim.qq.com/v4/group_open_http_svc/forbid_send_msg';
+        $res = $this->publicParams($data, $url);
+    }
+
+    /**
+     * 在群组中发送普通消息
+     * @param string $GroupId 群id
+     */
+    public function sendGroupMsg($GroupId)
+    {
+        $data = [
+            "GroupId" => $GroupId,
+            "MsgType" => 'TIMTextElem',
+            "MsgContent" => [
+                "Text" => "gift",
+            ],
+        ];
+        $url = 'https://console.tim.qq.com/v4/group_open_http_svc/send_group_msg';
+        $res = $this->publicParams($data, $url);
+    }
+
+    /**
+     * 设置全局禁言
+     * @param string $Account im账户
+     * @param int $GroupmsgNospeakingTime 群聊禁言时间
+     * @param int $C2CmsgNospeakingTime 单聊禁言时间
+     */
+    public function setnospeaking($Account, $GroupmsgNospeakingTime, $C2CmsgNospeakingTime = 0)
+    {
+        $data = [
+            "Set_Account" => $Account,
+            "C2CmsgNospeakingTime" => $GroupmsgNospeakingTime,
+            "GroupmsgNospeakingTime" => $C2CmsgNospeakingTime,
+        ];
+        $url = 'https://console.tim.qq.com/v4/openconfigsvr/setnospeaking';
         $res = $this->publicParams($data, $url);
     }
 }

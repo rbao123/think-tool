@@ -158,4 +158,44 @@ class ExcelTool
            abort($file->getError());
         }
     }
+
+    /**
+     * 导出excel(csv)
+     * @param array $data 导出数据
+     * @param array $headlist 第一行,列名
+     * @param string $fileName 输出Excel文件名
+     */
+    public static function csv_export($data, $fileName, $headlist)
+    {
+        //header设置
+        header("Cache-Control: max-age=0");
+        header('Content-Type: text/csv; charset=utf-8');
+        header('Content-Disposition: attachment;filename="' . $fileName . '.csv"');
+
+        //输出指定大小数据到是保存在内存中，如果它超过设置值，则自动写入临时文件
+        $csv = fopen('php://temp/maxmemory:' . (100 * 1024 * 1024), 'r+');
+
+        //添加BOM来修复UTF-8乱码
+        fwrite($csv, chr(0xEF) . chr(0xBB) . chr(0xBF));
+        fputcsv($csv, $headlist);
+        $num=0;
+        $limit=10000;
+        foreach ($data as $v) {
+            $num++;
+            //刷新一下输出buffer，防止由于数据过多造成问题
+            if ($limit == $num) {
+                ob_flush();
+                flush();
+                $num = 0;
+            }
+            foreach ($v as $k => $temp) {
+                $temp = str_replace(',', '，', $temp);
+                if (is_numeric($temp))
+                    $v[$k] = '`' . $temp;
+            }
+            fputcsv($csv, $v);
+        }
+        rewind($csv);
+        exit(stream_get_contents($csv));
+    }
 }
