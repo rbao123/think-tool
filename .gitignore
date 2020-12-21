@@ -3,4 +3,5 @@
 /app/
 index.php
 .env
+composer.lock
 /nginx.htaccess
