@@ -13,7 +13,7 @@
     },
     "authors": [
         {
-            "name": "rbao123",
+            "name": "rbao",
             "email": "wrbao@foxmail.com"
         }
     ],
@@ -22,6 +22,5 @@
         "psr-4": {
             "bao\\tool\\": "src"
         }
-    },
-    "minimum-stability": "dev"
+    }
 }

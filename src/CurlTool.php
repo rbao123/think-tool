@@ -6,14 +6,16 @@ namespace bao\tool;
 
 class CurlTool
 {
-    /** curl 获取 https 请求
+    /**
+     * curl post https 请求
      * @param String $url 请求的url
-     * @param Array $data 要發送的數據
-     * @param Array $header 请求时发送的header
+     * @param array $data 要發送的數據
+     * @param array $header 请求时发送的header
      * @param int $timeout 超时时间，默认30s
      * @param bool $debug 是否打印错误信息，默认false
+     * @return mixed
      */
-    static function https_post($url, $data = array(), $header = array(), $timeout = 30, $debug = false)
+    static function https_post(string $url, array $data = array(), array $header = array(), int $timeout = 30, bool $debug = false)
     {
 
         $ch = curl_init();
@@ -51,7 +53,16 @@ class CurlTool
 
     }
 
-    public static function https_get($url, $data = array(), $header = array(), $timeout = 30, $debug = false)
+    /**
+     * curl get https 请求
+     * @param String $url 请求的url
+     * @param array $data 要發送的數據
+     * @param array $header 请求时发送的header
+     * @param int $timeout 超时时间，默认30s
+     * @param bool $debug 是否打印错误信息，默认false
+     * @return mixed
+     */
+    public static function https_get(string $url, $data = array(), $header = array(), $timeout = 30, $debug = false)
     {
 
         $url .= '?';
