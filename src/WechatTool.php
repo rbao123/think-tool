@@ -5,7 +5,7 @@ namespace bao\tool;
 
 
 use app\common\model\User;
-use think\facade\Cache;
+
 
 class WechatTool
 {
